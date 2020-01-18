@@ -6,9 +6,11 @@
 
 string switchArgument(string switchName, int argc, char *argv[]);
 
-int inputMode(string line, int mode);
+void inputMode(string line, int &mode);
 
 void newCar(car *&p);
+
+car *lastCar(car *p);
 
 void getCarInfo(string line, car *&p);
 

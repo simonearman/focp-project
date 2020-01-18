@@ -26,8 +26,8 @@ struct car
     string engineNumber;
     string VIN;
     string firstRegistration;
-    plate plates;
-    owner owners;
+    plate *plates = nullptr;
+    owner *owners = nullptr;
     car *next = nullptr;
 };
 

@@ -15,17 +15,23 @@ string switchArgument(string switchName, int argc, char *argv[])
     return "";
 }
 
-int inputMode(string line, int mode)
+void inputMode(string line, int &mode)
 {
     if (line.find("--- car ---") == 0)
-        return 1;
+        mode = 1;
     else if (mode == 1)
         mode = 2;
     else if (line.find("vehicle registration plate") == 0)
-        return 3;
+        mode = 3;
     else if (line.find("owner") == 0)
-        return 4;
-    return mode;
+        mode = 4;
+}
+
+car *lastCar(car *p)
+{
+    while (p->next)
+        p = p->next;
+    return p;
 }
 
 void newCar(car *&p)
@@ -34,138 +40,105 @@ void newCar(car *&p)
     {
         p = new car;
     }
-
-    auto pointer = p;
-
-    while (pointer->next)
+    else
     {
-        pointer = pointer->next;
+        lastCar(p)->next = new car;
     }
-
-    pointer->next = new car;
 }
 
 void getCarInfo(string line, car *&p)
 {
     if (p)
     {
-        auto pointer = p;
-
-        while (pointer->next)
-        {
-            pointer = pointer->next;
-        }
-
         if (line.rfind("brand", 0) == 0)
         {
-            pointer->brand = line.substr(line.rfind(" "));
+            lastCar(p)->brand = line.substr(line.rfind(" ") + 1);
         }
         else if (line.rfind("model", 0) == 0)
         {
-            pointer->model = line.substr(line.rfind(" "));
+            lastCar(p)->model = line.substr(line.rfind(" ") + 1);
         }
         else if (line.rfind("year of construction", 0) == 0)
         {
-            pointer->constructionYear = line.substr(line.rfind(" "));
+            lastCar(p)->constructionYear = line.substr(line.rfind(" ") + 1);
         }
         else if (line.rfind("engine capacity", 0) == 0)
         {
-            pointer->engineCapacity = line.substr(line.rfind(" "));
+            lastCar(p)->engineCapacity = line.substr(line.rfind(" ") + 1);
         }
         else if (line.rfind("engine number", 0) == 0)
         {
-            pointer->engineNumber = line.substr(line.rfind(" "));
+            lastCar(p)->engineNumber = line.substr(line.rfind(" ") + 1);
         }
         else if (line.rfind("VIN number", 0) == 0)
         {
-            pointer->VIN = line.substr(line.rfind(" "));
+            lastCar(p)->VIN = line.substr(line.rfind(" ") + 1);
         }
         else if (line.rfind("first registration", 0) == 0)
         {
-            pointer->firstRegistration = line.substr(line.rfind(" "));
+            lastCar(p)->firstRegistration = line.substr(line.rfind(" ") + 1);
         }
     }
+}
+
+plate* lastCarLastPlate(car *p)
+{
+    auto pointer = lastCar(p)->plates;
+    while (pointer->next)
+        pointer = pointer->next;
+    return pointer;
 }
 
 void newPlate(string line, car *&p)
 {
-    if (p && line.find("vehicle registration plate") != 0)
+    if (line.find("vehicle registration plate") != 0)
     {
-        auto pointer = p;
-
-        while (pointer->next)
+        if (!lastCar(p)->plates)
         {
-            pointer = pointer->next;
+            lastCar(p)->plates = new plate{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1)};
         }
-
-        if (pointer->plates.date == "" && pointer->plates.number == "")
+        else
         {
-            pointer->plates.date = line.substr(0, line.find(" "));
-            pointer->plates.number = line.substr(line.find(" "));
-            return;
+            lastCarLastPlate(p)->next = new plate{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1)};
         }
-
-        auto pointer2 = pointer->plates.next;
-
-        while (pointer2->next)
-        {
-            pointer2 = pointer2->next;
-        }
-
-        pointer2->next = new plate{line.substr(0, line.find(" ")), line.substr(line.find(" "))};
     }
 }
 
-void newOwner(string line, car *&p) //Works only for max 2 owners in the same line
+owner *lastCarLastOwner(car *p)
 {
-    if (p && line.find("owner") != 0)
+    auto pointer = lastCar(p)->owners;
+    while (pointer->next)
+        pointer = pointer->next;
+    return pointer;
+}
+
+void newOwner(string line, car *&p)
+{
+    if (line.find("owner") != 0)
     {
-        auto pointer = p;
-
-        while (pointer->next)
+        if (line.find(",") == string::npos) //If there is only one name
         {
-            pointer = pointer->next;
-        }
-
-        if (line.find(",") == string::npos) //Checks if there is only one name
-        {
-            if (pointer->owners.date == "" && pointer->owners.name == "")
+            if (!lastCar(p)->owners)
             {
-                pointer->owners.date = line.substr(0, line.find(" "));
-                pointer->owners.name = line.substr(line.find(" "));
-                return;
+                lastCar(p)->owners = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1)};
             }
-
-            auto pointer2 = pointer->owners.next;
-
-            while (pointer2->next)
+            else
             {
-                pointer2 = pointer2->next;
+                lastCarLastOwner(p)->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1)};
             }
-
-            pointer2->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" "))};
-            return;
         }
-
-        //If there are two names
-        if (pointer->owners.date == "" && pointer->owners.name == "")
+        else //If there are two names
         {
-            pointer->owners.date = line.substr(0, line.find(" "));
-            pointer->owners.name = line.substr(line.find(" "), line.find(",")-11);
-
-            pointer->owners.next->date = line.substr(0, line.find(" "));
-            pointer->owners.next->name = line.substr(line.rfind(" "));
-            return;
+            if (!lastCar(p)->owners)
+            {
+                lastCar(p)->owners = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1, line.find(",") - 11)};
+                lastCarLastOwner(p)->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(", ") + 2)};
+            }
+            else
+            {
+                lastCarLastOwner(p)->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1, line.find(",") - 11)};
+                lastCarLastOwner(p)->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(", ") + 2)};
+            }
         }
-
-        auto pointer2 = pointer->owners.next;
-
-        while (pointer2->next)
-        {
-            pointer2 = pointer2->next;
-        }
-
-        pointer2->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" "), line.find(",") - 11)};
-        pointer2->next->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" "), line.find(",") - 11)};
     }
 }
