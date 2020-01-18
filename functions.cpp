@@ -97,10 +97,26 @@ void newPlate(string line, car *&p)
         {
             pointer = pointer->next;
         }
+
+        if (pointer->plates.date == "" && pointer->plates.number == "")
+        {
+            pointer->plates.date = line.substr(0, line.find(" "));
+            pointer->plates.number = line.substr(line.find(" "));
+            return;
+        }
+
+        auto pointer2 = pointer->plates.next;
+
+        while (pointer2->next)
+        {
+            pointer2 = pointer2->next;
+        }
+
+        pointer2->next = new plate{line.substr(0, line.find(" ")), line.substr(line.find(" "))};
     }
 }
 
-void newOwner(string line, car *&p)
+void newOwner(string line, car *&p) //Works only for max 2 owners in the same line
 {
     if (p && line.find("owner") != 0)
     {
@@ -110,5 +126,46 @@ void newOwner(string line, car *&p)
         {
             pointer = pointer->next;
         }
+
+        if (line.find(",") == string::npos) //Checks if there is only one name
+        {
+            if (pointer->owners.date == "" && pointer->owners.name == "")
+            {
+                pointer->owners.date = line.substr(0, line.find(" "));
+                pointer->owners.name = line.substr(line.find(" "));
+                return;
+            }
+
+            auto pointer2 = pointer->owners.next;
+
+            while (pointer2->next)
+            {
+                pointer2 = pointer2->next;
+            }
+
+            pointer2->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" "))};
+            return;
+        }
+
+        //If there are two names
+        if (pointer->owners.date == "" && pointer->owners.name == "")
+        {
+            pointer->owners.date = line.substr(0, line.find(" "));
+            pointer->owners.name = line.substr(line.find(" "), line.find(",")-11);
+
+            pointer->owners.next->date = line.substr(0, line.find(" "));
+            pointer->owners.next->name = line.substr(line.rfind(" "));
+            return;
+        }
+
+        auto pointer2 = pointer->owners.next;
+
+        while (pointer2->next)
+        {
+            pointer2 = pointer2->next;
+        }
+
+        pointer2->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" "), line.find(",") - 11)};
+        pointer2->next->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" "), line.find(",") - 11)};
     }
 }

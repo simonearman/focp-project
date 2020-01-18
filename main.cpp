@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
                 break;
             }
         }
+        inputFile.close();
     }
     return 0;
 }
