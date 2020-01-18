@@ -28,7 +28,7 @@ vehicle registration plates:
 2013-03-11 BB6322
 owners:
 2010-05-03 Walentyn Walinski
-2010-12-12 Bartłomiej Tuma
+2010-12-12 Bartlomiej Tuma
 2012-10-04 Irena Bolda
 --- car ---
 brand: toyota
@@ -45,8 +45,8 @@ vehicle registration plates:
 owners:
 2006-08-15 Robert Sitarski
 2008-10-19 Oliwia Lapa, Grzegorz Lapa
-2011-05-02 Kaja Kulińska
-2015-07-24 Hugo Płaczek
+2011-05-02 Kaja Kulinska
+2015-07-24 Jozef Cuda
 --- car ---
 brand: kia
 model: sportage
@@ -60,6 +60,6 @@ vehicle registration plates:
 2014-03-04 XS32234
 2015-11-29 GT5463
 owners:
-2012-10-30 Józef Cuda
+2012-10-30 Jozef Cuda
 2014-02-22 Magdalena Jakubek
-2015-11-15 Lilia Czarnowska
+2015-11-15 Teodor Puma
