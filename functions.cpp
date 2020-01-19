@@ -174,9 +174,17 @@ void newOwner(string line, car *&p)
 string ownerPeriodOfTime(owner *p)
 {
     if (p->next)
-        return p->date + " - " + p->next->date;
+    {
+        if (p->date != p->next->date)
+        {
+            return p->date + " - " + p->next->date;
+        }
+        return ownerPeriodOfTime(p->next);
+    }
     else
-        return p->date + " - now";
+    return p->date + " - now";
+
+
 }
 
 void outputPlatesDetails(ofstream &output, car *p)
