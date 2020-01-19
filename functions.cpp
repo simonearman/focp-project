@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include "structures.h"
 #include "functions.h"
 
@@ -95,11 +96,11 @@ void newPlate(string line, car *&p)
     {
         if (!lastCar(p)->plates)
         {
-            lastCar(p)->plates = new plate{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1), lastCar(p)};
+            lastCar(p)->plates = new plate{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1)};
         }
         else
         {
-            lastCarLastPlate(p)->next = new plate{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1), lastCar(p)};
+            lastCarLastPlate(p)->next = new plate{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1)};
         }
     }
 }
@@ -136,14 +137,108 @@ void newOwner(string line, car *&p)
             }
             else
             {
-                lastCarLastOwner(p)->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1, line.find(",") - 11)};
-                lastCarLastOwner(p)->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(", ") + 2)};
+                lastCarLastOwner(p)->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1, line.find(",") - 11), lastCar(p)};
+                lastCarLastOwner(p)->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(", ") + 2), lastCar(p)};
             }
         }
     }
 }
 
-void createRaport(car *p)
+string ownerPeriodOfTime(owner *p)
 {
+    if (p->next)
+        return p->date + " - " + p->next->date;
+    else
+        return p->date + " - now";
+}
+
+void outputPlatesDetails(ofstream &output, car *p)
+{
+    auto plates = p->plates;
+    while (plates)
+    {
+        output << plates->date + " " + plates->number + "\n";
+        plates = plates->next;
+    }
+}
+
+void outputCarDetails(ofstream &output, car *p)
+{
+    output << "brand: " + p->brand + "\n";
+    output << "model: " + p->model + "\n";
+    output << "year of construction: " + p->constructionYear + "\n";
+    output << "engine capacity: " + p->engineCapacity + "\n";
+    output << "engine number: " + p->engineNumber + "\n";
+    output << "VIN number: " + p->VIN + "\n";
+    output << "first registration: " + p->firstRegistration + "\n";
+    output << "vehicle registration plates:\n";
+    outputPlatesDetails(output, p);
+}
+
+void addToReportedList(reportedOwners *&p, string name)
+{
+    if (!p)
+    {
+        p = new reportedOwners{name};
+    }
+    else
+    {
+        while (p->next)
+        {
+            p = p->next;
+        }
+        p->next = new reportedOwners{name};
+    }
     
+}
+
+void createReport(ofstream &output, car *p)
+{
+    auto carPointer = p;
+    reportedOwners *reportedPeople = nullptr;
+
+    while (carPointer)
+    {
+        auto ownerPointer = carPointer->owners;
+
+        while (ownerPointer)
+        {
+            auto tempReported = reportedPeople;
+            while (tempReported)
+            {
+                if (ownerPointer->name == tempReported->name)
+                    return;
+                tempReported = tempReported->next;
+            }
+
+            output << "---------------- owner ----------------" << endl;
+            output << ownerPointer->name + "\n";
+            addToReportedList(reportedPeople, ownerPointer->name);
+
+            auto tempPointer1 = p;
+
+            while (tempPointer1)
+            {
+                auto tempPointer2 = tempPointer1->owners;
+
+                while (tempPointer2)
+                {
+                    if (ownerPointer->name == tempPointer2->name)
+                    {
+                        output << "--- car ---\n";
+                        output << "period of time: " << ownerPeriodOfTime(tempPointer2) << "\n";
+                        outputCarDetails(output, tempPointer2->car);
+                    }
+
+                    tempPointer2 = tempPointer2->next;
+                }
+
+                tempPointer1 = tempPointer1->next;
+            }
+
+            ownerPointer = ownerPointer->next;
+        }
+
+        carPointer = carPointer->next;
+    }
 }

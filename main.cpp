@@ -39,9 +39,11 @@ int main(int argc, char *argv[])
         inputFile.close();
     }
 
-    createRaport(cars);
+    createReport(outputFile, cars);
 
     outputFile.close();
+
+    cout << "i am done";
 
     return 0;
 }

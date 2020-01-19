@@ -3,11 +3,12 @@
 
 using namespace std;
 
+struct car;
+
 struct plate
 {
     string date;
     string number;
-    car *car;
     plate *next = nullptr;
 };
 
@@ -31,6 +32,12 @@ struct car
     plate *plates = nullptr;
     owner *owners = nullptr;
     car *next = nullptr;
+};
+
+struct reportedOwners
+{
+    string name;
+    reportedOwners *next;
 };
 
 #endif
