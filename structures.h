@@ -7,6 +7,7 @@ struct plate
 {
     string date;
     string number;
+    car *car;
     plate *next = nullptr;
 };
 
@@ -14,6 +15,7 @@ struct owner
 {
     string date;
     string name;
+    car *car;
     owner *next = nullptr;
 };
 

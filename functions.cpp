@@ -81,7 +81,7 @@ void getCarInfo(string line, car *&p)
     }
 }
 
-plate* lastCarLastPlate(car *p)
+plate *lastCarLastPlate(car *p)
 {
     auto pointer = lastCar(p)->plates;
     while (pointer->next)
@@ -95,11 +95,11 @@ void newPlate(string line, car *&p)
     {
         if (!lastCar(p)->plates)
         {
-            lastCar(p)->plates = new plate{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1)};
+            lastCar(p)->plates = new plate{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1), lastCar(p)};
         }
         else
         {
-            lastCarLastPlate(p)->next = new plate{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1)};
+            lastCarLastPlate(p)->next = new plate{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1), lastCar(p)};
         }
     }
 }
@@ -120,19 +120,19 @@ void newOwner(string line, car *&p)
         {
             if (!lastCar(p)->owners)
             {
-                lastCar(p)->owners = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1)};
+                lastCar(p)->owners = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1), lastCar(p)};
             }
             else
             {
-                lastCarLastOwner(p)->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1)};
+                lastCarLastOwner(p)->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1), lastCar(p)};
             }
         }
         else //If there are two names
         {
             if (!lastCar(p)->owners)
             {
-                lastCar(p)->owners = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1, line.find(",") - 11)};
-                lastCarLastOwner(p)->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(", ") + 2)};
+                lastCar(p)->owners = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1, line.find(",") - 11), lastCar(p)};
+                lastCarLastOwner(p)->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(", ") + 2), lastCar(p)};
             }
             else
             {
@@ -141,4 +141,9 @@ void newOwner(string line, car *&p)
             }
         }
     }
+}
+
+void createRaport(car *p)
+{
+    
 }

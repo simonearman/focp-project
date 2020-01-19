@@ -39,6 +39,8 @@ int main(int argc, char *argv[])
         inputFile.close();
     }
 
+    createRaport(cars);
+
     outputFile.close();
 
     return 0;
