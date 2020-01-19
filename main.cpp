@@ -43,7 +43,9 @@ int main(int argc, char *argv[])
 
     outputFile.close();
 
-    cout << "i am done";
+    deleteCars(cars);
 
+
+    cout << "Output file has been created" << endl;;
     return 0;
 }

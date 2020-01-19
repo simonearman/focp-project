@@ -29,6 +29,14 @@ void outputCarDetails(ofstream &output, car *p);
 
 void addToReportedList(reportedOwners *&p);
 
-void createReport(std::ofstream &output, car *p);
+void deleteReportedList(reportedOwners *&p);
+
+void createReport(ofstream &output, car *p);
+
+void deletePlates(plate *&p);
+
+void deleteOwners(owner *&p);
+
+void deleteCars(car *&p);
 
 #endif

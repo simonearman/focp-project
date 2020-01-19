@@ -37,7 +37,7 @@ struct car
 struct reportedOwners
 {
     string name;
-    reportedOwners *next;
+    reportedOwners *next = nullptr;
 };
 
 #endif

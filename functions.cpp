@@ -183,13 +183,24 @@ void addToReportedList(reportedOwners *&p, string name)
     }
     else
     {
-        while (p->next)
+        auto pointer = p;
+        while (pointer->next)
         {
-            p = p->next;
+            pointer = pointer->next;
         }
-        p->next = new reportedOwners{name};
+        pointer->next = new reportedOwners{name};
     }
     
+}
+
+void deleteReportedList(reportedOwners *&p)
+{
+    if (p)
+    {
+        deleteReportedList(p->next);
+        delete p;
+        p = nullptr;
+    }
 }
 
 void createReport(ofstream &output, car *p)
@@ -203,42 +214,76 @@ void createReport(ofstream &output, car *p)
 
         while (ownerPointer)
         {
-            auto tempReported = reportedPeople;
-            while (tempReported)
+            bool found = false;
+            auto temp = reportedPeople;
+
+            while (temp)
             {
-                if (ownerPointer->name == tempReported->name)
-                    return;
-                tempReported = tempReported->next;
+                if (ownerPointer->name == temp->name)
+                    found = true;
+                temp = temp->next;
             }
 
-            output << "---------------- owner ----------------" << endl;
-            output << ownerPointer->name + "\n";
-            addToReportedList(reportedPeople, ownerPointer->name);
-
-            auto tempPointer1 = p;
-
-            while (tempPointer1)
+            if (!found)
             {
-                auto tempPointer2 = tempPointer1->owners;
+                output << "---------------- owner ----------------" << endl;
+                output << ownerPointer->name + "\n";
+                addToReportedList(reportedPeople, ownerPointer->name);
 
-                while (tempPointer2)
+                auto tempPointer1 = p;
+
+                while (tempPointer1)
                 {
-                    if (ownerPointer->name == tempPointer2->name)
+                    auto tempPointer2 = tempPointer1->owners;
+
+                    while (tempPointer2)
                     {
-                        output << "--- car ---\n";
-                        output << "period of time: " << ownerPeriodOfTime(tempPointer2) << "\n";
-                        outputCarDetails(output, tempPointer2->car);
+                        if (ownerPointer->name == tempPointer2->name)
+                        {
+                            output << "--- car ---\n";
+                            output << "period of time: " << ownerPeriodOfTime(tempPointer2) << "\n";
+                            outputCarDetails(output, tempPointer2->car);
+                        }
+                        tempPointer2 = tempPointer2->next;
                     }
-
-                    tempPointer2 = tempPointer2->next;
+                    tempPointer1 = tempPointer1->next;
                 }
-
-                tempPointer1 = tempPointer1->next;
             }
-
             ownerPointer = ownerPointer->next;
         }
-
         carPointer = carPointer->next;
+    }
+    deleteReportedList(reportedPeople);
+}
+
+void deletePlates(plate *&p)
+{
+    if (p)
+    {
+        deletePlates(p->next);
+        delete p;
+        p = nullptr;
+    }
+}
+
+void deleteOwners(owner *&p)
+{
+    if (p)
+    {
+        deleteOwners(p->next);
+        delete p;
+        p = nullptr;
+    }
+}
+
+void deleteCars(car *&p)
+{
+    if (p)
+    {
+        deletePlates(p->plates);
+        deleteOwners(p->owners);
+        deleteCars(p->next);
+        delete p;
+        p = nullptr;
     }
 }
