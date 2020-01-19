@@ -3,35 +3,37 @@
 
 #include "structures.h"
 
-string switchArgument(string switchName, int argc, char *argv[]);
+bool checkSwitches(int argc, char *argv[]);
 
-void inputMode(string line, int &mode);
+std::string switchArgument(std::string switchName, int argc, char *argv[]);
+
+void inputMode(std::string line, int &mode);
 
 car *lastCar(car *p);
 
 void newCar(car *&p);
 
-void getCarInfo(string line, car *&p);
+void getCarInfo(std::string line, car *&p);
 
 plate *lastCarLastPlate(car *p);
 
-void newPlate(string line, car *&p);
+void newPlate(std::string line, car *&p);
 
 owner *lastCarLastOwner(car *p);
 
-void newOwner(string line, car *&p);
+void newOwner(std::string line, car *&p);
 
-string ownerPeriodOfTime(owner *p);
+std::string ownerPeriodOfTime(owner *p);
 
-void outputPlatesDetails(ofstream &output, car *p);
+void outputPlatesDetails(std::ofstream &output, car *p);
 
-void outputCarDetails(ofstream &output, car *p);
+void outputCarDetails(std::ofstream &output, car *p);
 
 void addToReportedList(reportedOwners *&p);
 
 void deleteReportedList(reportedOwners *&p);
 
-void createReport(ofstream &output, car *p);
+void createReport(std::ofstream &output, car *p);
 
 void deletePlates(plate *&p);
 

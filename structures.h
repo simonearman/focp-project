@@ -1,34 +1,32 @@
 #ifndef STRUCTURES_H
 #define STRUCTURES_H
 
-using namespace std;
-
 struct car;
 
 struct plate
 {
-    string date;
-    string number;
+    std::string date;
+    std::string number;
     plate *next = nullptr;
 };
 
 struct owner
 {
-    string date;
-    string name;
+    std::string date;
+    std::string name;
     car *car;
     owner *next = nullptr;
 };
 
 struct car
 {
-    string brand;
-    string model;
-    string constructionYear;
-    string engineCapacity;
-    string engineNumber;
-    string VIN;
-    string firstRegistration;
+    std::string brand;
+    std::string model;
+    std::string constructionYear;
+    std::string engineCapacity;
+    std::string engineNumber;
+    std::string VIN;
+    std::string firstRegistration;
     plate *plates = nullptr;
     owner *owners = nullptr;
     car *next = nullptr;
@@ -36,7 +34,7 @@ struct car
 
 struct reportedOwners
 {
-    string name;
+    std::string name;
     reportedOwners *next = nullptr;
 };
 

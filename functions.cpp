@@ -3,6 +3,33 @@
 #include "structures.h"
 #include "functions.h"
 
+using namespace std;
+
+bool checkSwitches(int argc, char *argv[])
+{
+    bool foundI = false;
+    bool foundO = false;
+    for (int i = 0; i < argc; i ++)
+    {
+        string argument = argv[i];
+        if (argument == "-i")
+        {
+            foundI = true;
+            i++;
+        }
+        if (argument == "-o")
+        {
+            foundO = true;
+            i++;
+        }
+    }
+
+    if (!foundI || !foundO)
+        return false;
+
+    return true;
+}
+
 string switchArgument(string switchName, int argc, char *argv[])
 {
     for (int i = 0; i < argc; i++)

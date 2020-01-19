@@ -8,6 +8,12 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+    if (checkSwitches(argc, argv) == false)
+    {
+        cout << "Please provide correct arguments for switches -i and -o";
+        return 0;
+    }
+
     ifstream inputFile(switchArgument("-i", argc, argv));
     ofstream outputFile(switchArgument("-o", argc, argv));
     car *cars = nullptr;
@@ -44,7 +50,6 @@ int main(int argc, char *argv[])
     outputFile.close();
 
     deleteCars(cars);
-
 
     cout << "Output file has been created" << endl;;
     return 0;
