@@ -1,92 +1,104 @@
+/** @file */
+
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
 #include "structures.h"
 
-/** The function returns true if the switches were used correctly.
-@param argc number of arguments used
-@param argv array of arguments used */
+/** The function checks if the user has put correct switch arguments.
+@param argc number of arguments
+@param argv array of arguments
+@return true if the switches are correct */
 bool checkSwitches(int argc, char *argv[]);
 
-/** The function returns the value provided in a switch.
-@param switchName name of the switch the functions is looking for
-@param argc number of arguments used
-@param argv array of arguments used */
+/** The function reads the program's arguments.
+@param switchName name of the switch
+@param argc number of arguments
+@param argv array of arguments
+@return argument of the switch */
 std::string switchArgument(std::string switchName, int argc, char *argv[]);
 
-/** The function determines what type of car info is being provided in a line and changes the mode accordingly.
-@param line line of input which is being tested
-@param mode variable which will be changed on info type detection */
-void inputMode(std::string line, int &mode);
-
-/** The function returns the pointer to the last car of a list.
-@param p pointer to the list which is being tested */
+/** The function finds the last car in a list.
+@param p pointer to the car list
+@return pointer to the last car */
 car *lastCar(car *p);
 
-/** The function adds a new car to a list.
-@param p pointer to the list to which the car is being added to */
+/** The function adds a new car to a car list.
+@param p pointer to the car list */
 void newCar(car *&p);
 
-/** The function changes the car info according to the contents of the provided line.
-@param line line which contains the car info
-@param p pointer to the car which info is being changed */
+/** The function reads a line containing car details and add details to the last car in a list.
+@param line line of car details
+@param p pointer to the car list */
 void getCarInfo(std::string line, car *&p);
 
-/** The function returns the pointer to the last plate of a car.
-@param p pointer to the car which plates are being tested */
+/** The function finds the last plate of the last car in a list.
+@param p pointer to the car list
+@return pointer to the last plate of the last car */
 plate *lastCarLastPlate(car *p);
 
-/** The function add a new plate to a car.
-@param line line which contains the new plate's info
-@param p pointer to the car to which the new plate is being added to */
+/** The function reads a line containing plate details and adds a new plate to a car list.
+@param line line of plate details
+@param p pointer to the car list */
 void newPlate(std::string line, car *&p);
 
-/** The function returns the pointer to the last owner of a car.
-@param p pointer to the car which owners are being tested */
+/** The function finds the last owner of the last car in a list.
+@param p pointer to the car list
+@return pointer to the last owner of the last car */
 owner *lastCarLastOwner(car *p);
 
-/** The function adds a new owner to a car.
-@param line line which contains the new owner's info
-@param p pointer to the car to which the new owner is being added to */
+/** The function reads a line containing owner details and adds a new owner to a car list.
+@param line line of owner details
+@param p pointer to the car list */
 void newOwner(std::string line, car *&p);
 
-/** The function returns the period of time when an owner had a car.
-@param p pointer to the owner whose ownership is being tested */
+/** The function reads a line and decides what type of car details it contains.
+@param line line of car details
+@param mode variable which stores the type of car details */
+void inputMode(std::string line, int &mode);
+
+/** The function creates a new car, an owner or a plate to a car list, depending on the mode variable.
+@param input file containing all car details
+@param p pointer to the car list
+@param line line of car, owner or plate details
+@param mode variable which stores the type of car details */
+void getInfoFromLine(std::ifstream &input, car *&p, std::string line, int &mode);
+
+/** The function reads a owner's ownership details.
+@param p pointer to the owner list
+@return period of ownership */
 std::string ownerPeriodOfTime(owner *p);
 
-/** The function outputs car's plate info into a file.
-@param output file which plate info is being outputed into
-@param p pointer to the car which plate info is being tested */
+/** The function outputs plate details.
+@param output file where the output is saved at
+@param p pointer to the car list */
 void outputPlatesDetails(std::ofstream &output, car *p);
 
-/** The function outputs car info into a file.
-@param output file which car info is being outputed into
-@param p pointer to the car which is being tested */
+/** The function outputs owner details.
+@param output file where the output is saved at
+@param p pointer to the car list */
 void outputCarDetails(std::ofstream &output, car *p);
 
-/** The function adds an owner to a reported people list.
-@param p pointer to the list to which the owner is being added to */
-void addToReportedList(reportedOwners *&p);
-
-/** The function deletes a reported people list.
-@param p pointer to the list which is being deleted */
-void deleteReportedList(reportedOwners *&p);
-
-/** The function outputs all car, plate and owner info into a file.
-@param output file which the info is being outputed into
-@param p pointer to the car list containing the info */
-void createReport(std::ofstream &output, car *p);
-
 /** The function deletes a plate list.
-@param p pointer to the plate list which is being deleted */
+@param p pointer to the plate list */
 void deletePlates(plate *&p);
 
 /** The function deletes an owner list.
-@param p pointer to the owner list which is being deleted */
+@param p pointer to the owner list */
 void deleteOwners(owner *&p);
 
-/** The function deletes a car list and its plates and owners.
-@param p pointer to the car list which is being deleted */
+/** The function deletes a car list.
+@param p pointer to the car list */
 void deleteCars(car *&p);
+
+/** The function adds a new owner to a reported owners list.
+@param name name of the new owner
+@param p pointer to the owner list */
+void newReportedOwner(std::string name, owner *&p);
+
+/** The function creates a report of owners and their cars.
+@param output file where the report is saved at
+@param p pointer to the car list */
+void createReport(std::ofstream &output, car *p);
 
 #endif

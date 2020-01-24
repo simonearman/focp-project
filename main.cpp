@@ -25,22 +25,7 @@ int main(int argc, char *argv[])
 
         while (getline(inputFile, line))
         {
-            inputMode(line, mode);
-            switch (mode)
-            {
-                case 1: //Line indicates there is a new car
-                    newCar(cars);
-                    break;
-                case 2: //Line contains car info
-                    getCarInfo(line, cars);
-                    break;
-                case 3: //Line contains plate info
-                    newPlate(line, cars);
-                    break;
-                case 4: //Line contains owner info
-                    newOwner(line, cars);
-                    break;
-            }
+            getInfoFromLine(inputFile, cars, line, mode);
         }
         inputFile.close();
     }

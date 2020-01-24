@@ -43,18 +43,6 @@ string switchArgument(string switchName, int argc, char *argv[])
     return "";
 }
 
-void inputMode(string line, int &mode)
-{
-    if (line.find("--- car ---") == 0)
-        mode = 1;
-    else if (mode == 1)
-        mode = 2;
-    else if (line.find("vehicle registration plate") == 0)
-        mode = 3;
-    else if (line.find("owner") == 0)
-        mode = 4;
-}
-
 car *lastCar(car *p)
 {
     while (p->next)
@@ -121,13 +109,15 @@ void newPlate(string line, car *&p)
 {
     if (line.find("vehicle registration plate") != 0)
     {
+        string date = line.substr(0, line.find(" "));
+        string number = line.substr(line.find(" ") + 1);
         if (!lastCar(p)->plates)
         {
-            lastCar(p)->plates = new plate{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1)};
+            lastCar(p)->plates = new plate{date, number};
         }
         else
         {
-            lastCarLastPlate(p)->next = new plate{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1)};
+            lastCarLastPlate(p)->next = new plate{date, number};
         }
     }
 }
@@ -146,28 +136,65 @@ void newOwner(string line, car *&p)
     {
         if (line.find(",") == string::npos) //If there is only one name
         {
+            string date = line.substr(0, line.find(" "));
+            string name = line.substr(line.find(" ") + 1);
             if (!lastCar(p)->owners)
             {
-                lastCar(p)->owners = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1), lastCar(p)};
+                lastCar(p)->owners = new owner{date, name, lastCar(p)};
             }
             else
             {
-                lastCarLastOwner(p)->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1), lastCar(p)};
+                lastCarLastOwner(p)->next = new owner{date, name, lastCar(p)};
             }
         }
         else //If there are two names
         {
+            string date = line.substr(0, line.find(" "));
+            string name1 = line.substr(line.find(" ") + 1, line.find(",") - 11);
+            string name2 = line.substr(line.find(", ") + 2);
             if (!lastCar(p)->owners)
             {
-                lastCar(p)->owners = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1, line.find(",") - 11), lastCar(p)};
-                lastCarLastOwner(p)->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(", ") + 2), lastCar(p)};
+                lastCar(p)->owners = new owner{date, name1, lastCar(p)};
+                lastCarLastOwner(p)->next = new owner{date, name2, lastCar(p)};
             }
             else
             {
-                lastCarLastOwner(p)->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(" ") + 1, line.find(",") - 11), lastCar(p)};
-                lastCarLastOwner(p)->next = new owner{line.substr(0, line.find(" ")), line.substr(line.find(", ") + 2), lastCar(p)};
+                lastCarLastOwner(p)->next = new owner{date, name1, lastCar(p)};
+                lastCarLastOwner(p)->next = new owner{date, name2, lastCar(p)};
             }
         }
+    }
+}
+
+void inputMode(string line, int &mode)
+{
+    if (line.find("--- car ---") == 0)
+        mode = 1;
+    else if (mode == 1)
+        mode = 2;
+    else if (line.find("vehicle registration plate") == 0)
+        mode = 3;
+    else if (line.find("owner") == 0)
+        mode = 4;
+}
+
+void getInfoFromLine(ifstream &input, car *&p, string line, int &mode)
+{
+    inputMode(line, mode);
+    switch (mode)
+    {
+    case 1: //Line indicates there is a new car
+        newCar(p);
+        break;
+    case 2: //Line contains car info
+        getCarInfo(line, p);
+        break;
+    case 3: //Line contains plate info
+        newPlate(line, p);
+        break;
+    case 4: //Line contains owner info
+        newOwner(line, p);
+        break;
     }
 }
 
@@ -210,87 +237,6 @@ void outputCarDetails(ofstream &output, car *p)
     outputPlatesDetails(output, p);
 }
 
-void addToReportedList(reportedOwners *&p, string name)
-{
-    if (!p)
-    {
-        p = new reportedOwners{name};
-    }
-    else
-    {
-        auto pointer = p;
-        while (pointer->next)
-        {
-            pointer = pointer->next;
-        }
-        pointer->next = new reportedOwners{name};
-    }
-    
-}
-
-void deleteReportedList(reportedOwners *&p)
-{
-    if (p)
-    {
-        deleteReportedList(p->next);
-        delete p;
-        p = nullptr;
-    }
-}
-
-void createReport(ofstream &output, car *p)
-{
-    auto carPointer = p;
-    reportedOwners *reportedPeople = nullptr;
-
-    while (carPointer)
-    {
-        auto ownerPointer = carPointer->owners;
-
-        while (ownerPointer)
-        {
-            bool found = false;
-            auto temp = reportedPeople;
-
-            while (temp)
-            {
-                if (ownerPointer->name == temp->name)
-                    found = true;
-                temp = temp->next;
-            }
-
-            if (!found)
-            {
-                output << "---------------- owner ----------------" << endl;
-                output << ownerPointer->name + "\n";
-                addToReportedList(reportedPeople, ownerPointer->name);
-
-                auto tempPointer1 = p;
-
-                while (tempPointer1)
-                {
-                    auto tempPointer2 = tempPointer1->owners;
-
-                    while (tempPointer2)
-                    {
-                        if (ownerPointer->name == tempPointer2->name)
-                        {
-                            output << "--- car ---\n";
-                            output << "period of time: " << ownerPeriodOfTime(tempPointer2) << "\n";
-                            outputCarDetails(output, tempPointer2->car);
-                        }
-                        tempPointer2 = tempPointer2->next;
-                    }
-                    tempPointer1 = tempPointer1->next;
-                }
-            }
-            ownerPointer = ownerPointer->next;
-        }
-        carPointer = carPointer->next;
-    }
-    deleteReportedList(reportedPeople);
-}
-
 void deletePlates(plate *&p)
 {
     if (p)
@@ -321,4 +267,72 @@ void deleteCars(car *&p)
         delete p;
         p = nullptr;
     }
+}
+
+void newReportedOwner(string name, owner *&p)
+{
+    if (!p)
+    {
+        p = new owner{"", name};
+    }
+    else
+    {
+        auto pointer = p;
+        while (pointer->next)
+            pointer = pointer->next;
+        pointer->next = new owner{"", name};
+    }
+}
+
+void createReport(ofstream &output, car *p)
+{
+    auto carPointer = p;
+    owner *reportedPeople = nullptr;
+
+    while (carPointer)
+    {
+        auto ownerPointer = carPointer->owners;
+
+        while (ownerPointer)
+        {
+            bool found = false;
+            auto temp = reportedPeople;
+
+            while (temp)
+            {
+                if (ownerPointer->name == temp->name)
+                    found = true;
+                temp = temp->next;
+            }
+
+            if (!found)
+            {
+                output << "---------------- owner ----------------" << endl;
+                output << ownerPointer->name + "\n";
+                newReportedOwner(ownerPointer->name, reportedPeople);
+
+                auto tempPointer1 = p;
+
+                while (tempPointer1)
+                {
+                    auto tempPointer2 = tempPointer1->owners;
+
+                    while (tempPointer2)
+                    {
+                        if (ownerPointer->name == tempPointer2->name)
+                        {
+                            output << "--- car ---\n";
+                            output << "period of time: " << ownerPeriodOfTime(tempPointer2) << "\n";
+                            outputCarDetails(output, tempPointer2->car);
+                        }
+                        tempPointer2 = tempPointer2->next;
+                    }
+                    tempPointer1 = tempPointer1->next;
+                }
+            }
+            ownerPointer = ownerPointer->next;
+        }
+        carPointer = carPointer->next;
+    }
+    deleteOwners(reportedPeople);
 }
